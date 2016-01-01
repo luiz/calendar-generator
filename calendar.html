@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Calendário</title>
+		<style>
+label {
+	display: block;
+}
+
+.thumbnail {
+	height: 3em;
+	display: inline-block;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	break-after: always;
+	page-break-after: always;
+}
+
+caption {
+	font-size: 2.5em;
+	font-weight: bold;
+	text-align: center;
+}
+
+caption img {
+	height: 8cm;
+	display: block;
+	margin: 0.25em auto 1em;
+}
+
+td, th {
+	border: 1px solid black;
+	width: 14.28%;
+}
+
+th {
+	text-align: center;
+}
+
+td {
+	padding: 0 0.2em 4em;
+}
+		</style>
+	</head>
+	<body>
+		<form id="parametros">
+			<label>Ano:
+				<input id="ano" type="text">
+			</label>
+			<fieldset>
+				<legend>Imagens dos meses</legend>
+				<label>Janeiro:
+					<input class="imagem-mes" id="imagem-janeiro" type="text">
+					<img src="" alt="Imagem do mês de janeiro" class="thumbnail">
+				</label>
+				<label>Fevereiro:
+					<input class="imagem-mes" id="imagem-fevereiro" type="text">
+					<img src="" alt="Imagem do mês de fevereiro" class="thumbnail">
+				</label>
+				<label>Março:
+					<input class="imagem-mes" id="imagem-marco" type="text">
+					<img src="" alt="Imagem do mês de março" class="thumbnail">
+				</label>
+				<label>Abril:
+					<input class="imagem-mes" id="imagem-abril" type="text">
+					<img src="" alt="Imagem do mês de abril" class="thumbnail">
+				</label>
+				<label>Maio:
+					<input class="imagem-mes" id="imagem-maio" type="text">
+					<img src="" alt="Imagem do mês de maio" class="thumbnail">
+				</label>
+				<label>Junho:
+					<input class="imagem-mes" id="imagem-junho" type="text">
+					<img src="" alt="Imagem do mês de junho" class="thumbnail">
+				</label>
+				<label>Julho:
+					<input class="imagem-mes" id="imagem-julho" type="text">
+					<img src="" alt="Imagem do mês de julho" class="thumbnail">
+				</label>
+				<label>Agosto:
+					<input class="imagem-mes" id="imagem-agosto" type="text">
+					<img src="" alt="Imagem do mês de agosto" class="thumbnail">
+				</label>
+				<label>Setembro:
+					<input class="imagem-mes" id="imagem-setembro" type="text">
+					<img src="" alt="Imagem do mês de setembro" class="thumbnail">
+				</label>
+				<label>Outubro:
+					<input class="imagem-mes" id="imagem-outubro" type="text">
+					<img src="" alt="Imagem do mês de outubro" class="thumbnail">
+				</label>
+				<label>Novembro:
+					<input class="imagem-mes" id="imagem-novembro" type="text">
+					<img src="" alt="Imagem do mês de novembro" class="thumbnail">
+				</label>
+				<label>Dezembro:
+					<input class="imagem-mes" id="imagem-dezembro" type="text">
+					<img src="" alt="Imagem do mês de dezembro" class="thumbnail">
+				</label>
+			</fieldset>
+			<button id="gerar">Gerar calendário</button>
+		</form>
+		<script>
+function imagemDoMes(mes) {
+	var idsMeses = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+	return document.getElementById('imagem-' + idsMeses[mes]).value;
+}
+
+function montaCabecalho(mes) {
+	var nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+	var nomesDias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+	var cabecalho = '<table><caption>' + nomesMeses[mes] + '<img src="' + imagemDoMes(mes) + '" alt="Imagem do mês"></caption><thead><tr>';
+	for (var i = 0; i < 7; i++) {
+		cabecalho += '<th>' + nomesDias[i] + '</th>';
+	}
+	return cabecalho + '</tr></thead><tbody>';
+}
+
+function preencheVazios(inicio, fim) {
+	var colunas = '';
+	for (var i = inicio; i < fim; i++) {
+		colunas += '<td></td>';
+	}
+	return colunas;
+}
+
+function geraMes(ano, mes) {
+	var dia = new Date(ano, mes, 1, 12, 0); // ao meio-dia para evitar problemas na hora de andar pelos dias
+	var tabela = montaCabecalho(mes);
+	tabela += '<tr>' + preencheVazios(0, dia.getDay());
+	while (dia.getMonth() == mes) {
+		tabela += '<td>' + dia.getDate() + '</td>';
+		dia = new Date(ano, mes, dia.getDate() + 1, 12, 0);
+		if (dia.getDay() == 0 && dia.getMonth() == mes) {
+			tabela += '</tr><tr>';
+		}
+	}
+	if (dia.getDay() != 0) {
+		tabela += preencheVazios(dia.getDay(), 7) + '</tr>';
+	}
+	return tabela + '</tbody></table>';
+}
+
+function geraCalendario() {
+	var ano = parseInt(document.getElementById('ano').value);
+	var htmlCalendario = '';
+	for (var mes = 0; mes < 12; mes++) {
+		htmlCalendario += geraMes(ano, mes);
+	}
+	document.body.innerHTML = htmlCalendario;
+}
+
+function atualizaThumbnail(evento) {
+	evento.target.nextElementSibling.src = evento.target.value;
+}
+
+document.getElementById('gerar').onclick = geraCalendario;
+
+var inputImagens = document.querySelectorAll('.imagem-mes');
+for (var i = 0; i < inputImagens.length; i++) {
+	inputImagens[i].onchange = atualizaThumbnail;
+}
+		</script>
+	</body>
+</html>
